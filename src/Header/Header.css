@@ -1,0 +1,51 @@
+.header {
+  height: 7rem;
+  background-color: #80a829; /* Update this to your desired color */
+  padding: 0.5rem;
+  z-index: 2;
+  box-shadow: 0 0.8rem 1rem rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+h1 {
+  font-size: 3rem;
+  color: white; /* Ensure text is visible */
+}
+
+ul {
+  list-style: none;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.navlink {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navlink:hover,
+.active {
+  background-color: blanchedalmond;
+  color: black;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  .header {
+    gap: 1rem;
+  }
+
+  .navlink {
+    padding: 0.3rem;
+  }
+}
