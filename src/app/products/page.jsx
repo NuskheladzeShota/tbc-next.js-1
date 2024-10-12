@@ -1,130 +1,41 @@
-'use client';
-import { useEffect, useState } from 'react';
+import { fetchSearchedProducts } from './ProductService';
 import { ProductList } from './ProductList';
+import SearchBar from './SearchBar';
 import './ProductCard.css';
-import Spinner from '../../assets/spinner/spinner';
 
-const productsURL = 'https://dummyjson.com/products';
-
-const SortButton = ({ onSort, sortOrder }) => {
-  return (
-    <button className='sort-button' onClick={onSort}>
-      Sort {sortOrder === 'asc' ? 'Descending' : 'Ascending'}
-    </button>
-  );
-};
-
-export default function Products() {
-  const [productList, setProductList] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [sortOrder, setSortOrder] = useState('asc');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+export default async function Products({ searchParams }) {
+  const currentPage = parseInt(searchParams.page || 1);
+  const sortOrder = searchParams.order || 'asc';
+  const searchQuery = searchParams.q || '';
   const itemsPerPage = 9;
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const url = debouncedQuery
-      ? `https://dummyjson.com/products/search?q=${debouncedQuery}`
-      : `${productsURL}?limit=${itemsPerPage}&skip=${(currentPage - 1) * itemsPerPage}&sortBy=title&order=${sortOrder}`;
-      
-      const response = await fetch(url)
-      const data = await response.json();
-      setProductList(data.products);
-      setTotalPages(Math.ceil(data.total / itemsPerPage));
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      setProductList([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { products, totalPages } = await fetchSearchedProducts(searchQuery, currentPage, sortOrder, itemsPerPage);
 
-  const fetchData = async (order) => {
-    try {
-      const response = await fetch(`https://dummyjson.com/products?sortBy=title&order=${order}`);
-      const result = await response.json();
-      setData(result.products);
-    } catch (error) {
-      console.error('Error fetching sorted data:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, [currentPage, sortOrder, debouncedQuery]);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 1000);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchQuery]);
-
-  const handleSort = () => {
-    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    setSortOrder(newOrder);
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-    setCurrentPage(1);
+  const buildUrl = (page, order, query) => {
+    const params = new URLSearchParams({ page, order, q: query });
+    return `?${params.toString()}`;
   };
 
   return (
     <div>
-      {loading ? (
-        <div className="main">
-          <span>Loading...</span>
-          <Spinner />
-        </div>
-      ) : (
-        <>
-          <div className="sort-container">
-            <SortButton onSort={handleSort} sortOrder={sortOrder} />
-            <input
-              type="text"
-              placeholder="Search by title"
-              value={searchQuery}
-              onChange={handleSearch}
-              className='search-input'
-            />
-          </div>
-          <ProductList productList={productList} />
-          <div className="pagination">
-            <button onClick={handlePreviousPage} disabled={currentPage === 1}>
-              Previous
-            </button>
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
+      <div className="sort-container">
+        <a href={buildUrl(currentPage, sortOrder === 'asc' ? 'desc' : 'asc', searchQuery)}>
+          Sort {sortOrder === 'asc' ? 'Descending' : 'Ascending'}
+        </a>
+        <SearchBar searchQuery={searchQuery} />
+      </div>
+      <ProductList productList={products} />
+      <div className="pagination">
+        {currentPage > 1 && (
+          <a href={buildUrl(currentPage - 1, sortOrder, searchQuery)}>Previous</a>
+        )}
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        {currentPage < totalPages && (
+          <a href={buildUrl(currentPage + 1, sortOrder, searchQuery)}>Next</a>
+        )}
+      </div>
     </div>
   );
 }
