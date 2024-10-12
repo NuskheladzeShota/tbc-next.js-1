@@ -16,3 +16,38 @@
   padding: 5px 20px;
   font-size: 12px;
 }
+
+.sort-container {
+  position: absolute;
+  top: 120px;
+  right: 10px;
+}
+
+.sort-button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.sort-button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.sort-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.search-input {
+  padding: 10px;
+  margin-left: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
