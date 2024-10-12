@@ -1,23 +1,10 @@
-'use client';
+import BlogList from './BlogList';
 
-import usePosts from '../../assets/hooks/usePosts';
-import Blog from './Blog';
-import Spinner from '../../assets/spinner/spinner';
-
-export default function BlogList() {
-  const { posts, loading } = usePosts();
-
+export default async function Page() {
   return (
-    <main className="main">
-      {loading && (
-        <>
-          <span>Loading...</span>
-          <Spinner />
-        </>
-      )}
-      {posts.map((post) => (
-        <Blog blog={post} key={post.id} />
-      ))}
-    </main>
+    <div>
+      <h1>Blog List</h1>
+      <BlogList />
+    </div>
   );
 }

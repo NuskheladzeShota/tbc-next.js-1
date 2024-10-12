@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import './blog.css';
+
 export default function Blog({ blog }) {
   return (
     <div className="blog-item">
