@@ -27,9 +27,11 @@ export default function Products() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${productsURL}?limit=${itemsPerPage}&skip=${(currentPage - 1) * itemsPerPage}&sortBy=title&order=${sortOrder}${debouncedQuery ? `&q=${debouncedQuery}` : ''}`
-      );
+      const url = debouncedQuery
+      ? `https://dummyjson.com/products/search?q=${debouncedQuery}`
+      : `${productsURL}?limit=${itemsPerPage}&skip=${(currentPage - 1) * itemsPerPage}&sortBy=title&order=${sortOrder}`;
+      
+      const response = await fetch(url)
       const data = await response.json();
       setProductList(data.products);
       setTotalPages(Math.ceil(data.total / itemsPerPage));
